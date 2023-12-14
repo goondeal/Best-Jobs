@@ -105,7 +105,7 @@ class JobApplication(models.Model):
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='applications')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='applications')
     cover_letter = models.TextField(max_length=2000, blank=True, null=True)
-    answers = models.ManyToManyField(JobQuestionAnswer, through='JobApplicationAnswer')
+    questions = models.ManyToManyField(JobQuestion, through='JobApplicationAnswer')
 
     created_at = models.DateTimeField(auto_now_add=True)
     last_update_at = models.DateTimeField(auto_now=True)
@@ -123,7 +123,7 @@ class JobApplication(models.Model):
 class JobApplicationAnswer(models.Model):
     application = models.ForeignKey(JobApplication, on_delete=models.CASCADE)
     question = models.ForeignKey(JobQuestion, on_delete=models.CASCADE)
-    answer = models.CharField()
+    answer = models.CharField(max_length=155)
     
     def __str__(self) -> str:
         return f'APP-{self.application.id} {self.question} {self.answer}'

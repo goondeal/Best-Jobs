@@ -2,12 +2,12 @@ from django.shortcuts import render, redirect
 from django.views.generic import View
 from django.contrib.auth import login, authenticate
 
-from .forms import CustomUserCreationForm
+# from .forms import CustomUserCreationForm
 
 
 class SignupView(View):
     template_name = 'accounts/signup.html'
-    form_class = CustomUserCreationForm
+    # form_class = CustomUserCreationForm
     
     def get(self, request):
         form = self.form_class()
