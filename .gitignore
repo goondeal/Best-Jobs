@@ -71,6 +71,7 @@ venv/
 ENV/ 
 env.bak/ 
 venv.bak/ 
+_*.json
 
 # mkdocs documentation 
 /site 
