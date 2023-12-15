@@ -22,7 +22,7 @@ class Country(models.Model):
 
 class State(models.Model):
     name = models.CharField(max_length=128)
-    country = models.ForeignKey(Country, on_delete=models.CASCADE)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name='states')
     order = models.SmallIntegerField(default=0)
 
     class Meta:
@@ -38,7 +38,7 @@ class State(models.Model):
 
 class City(models.Model):
     name = models.CharField(max_length=128)
-    state = models.ForeignKey(State, on_delete=models.CASCADE)
+    state = models.ForeignKey(State, on_delete=models.CASCADE, related_name='cities')
     order = models.SmallIntegerField(default=0)
 
     class Meta:
