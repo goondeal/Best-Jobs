@@ -3,6 +3,7 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext as _
+from django.utils.text import slugify
 
 from .managers import CustomUserManager
 from locations.models import City
@@ -20,7 +21,7 @@ class UserBase(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ('first_name', 'last_name', 'birthday')
+    REQUIRED_FIELDS = ('first_name', 'last_name', )
 
     objects = CustomUserManager()
 
@@ -79,12 +80,13 @@ class Industry(models.Model):
         return self.name
 
 class CompanyInfo(models.Model):
-    user = models.OneToOneField(UserBase, on_delete=models.CASCADE)
+    company = models.OneToOneField('Company', on_delete=models.CASCADE)
     name = models.CharField(max_length=150)
+    slug = models.SlugField(unique=True, allow_unicode=True, editable=False)
     description = models.TextField(max_length=1000, blank=True, null=True)
     foundation_year = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1000), MaxValueValidator(datetime.now().year + 1)])
-    logo = models.ImageField(upload_to='company-logo', default='company-logo/default.jpg')
+    logo = models.ImageField(upload_to='company-logo', default='company-logo/default.png')
     cover = models.ImageField(upload_to='company-cover', blank=True, null=True)
     city = models.ForeignKey(City, on_delete=models.PROTECT)
     
@@ -110,6 +112,17 @@ class CompanyInfo(models.Model):
         if self.size < 1001:
             return '501-1000'    
         return 'more than 1000'    
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            slug = slugify(self.name, allow_unicode=True)
+            if CompanyInfo.objects.filter(slug=slug).exists():
+                slug = slugify(f'{self.name} {self.city.name}', allow_unicode=True)
+                while CompanyInfo.objects.filter(slug=slug).exists():
+                    random_num = str(datetime.now().timestamp()).split('.')[-1][-3:]
+                    slug = slugify(f'{self.name} {self.city.name} {random_num}', allow_unicode=True)
+            self.slug = slug
+        super(CompanyInfo, self).save(*args, **kwargs)
 
 
 class CompanyManager(models.Manager):
