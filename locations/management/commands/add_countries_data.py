@@ -1,6 +1,7 @@
 import json
+import logging
 from django.core.management.base import BaseCommand
-from management.models import *
+from locations.models import *
 
 
 class Command(BaseCommand):
@@ -16,9 +17,10 @@ class Command(BaseCommand):
             data = json.loads(f.read())
 
         countries_in_mvp = ['egypt', 'saudi_arabia',
-                            'emarates', 'qatar', 'kuwait', 'bahrain']
+                            'emarates', 'qatar', 'america']
+        logger = logging.getLogger('django')                    
         for country_name in countries_in_mvp:
-            print('Adding', country_name, '...')
+            logger.info(f'Adding {country_name} data ...')
             country_json = data[country_name]
             country = Country.objects.create(
                 code=country_json['code'],
