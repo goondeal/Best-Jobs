@@ -1,212 +1,95 @@
-{% extends "core/base.html" %}
-{% load i18n %}
-{% load crispy_forms_tags %}
-
-{% block title %}{% trans 'login' %}{% endblock %}
-
-{% block content %}
-<!-- <div class="max-w-screen-md bg-white dark:bg-gray-900 px-4 pt-20 pb-8 mx-auto lg:py-16 lg:pt-28">
-    <div class="border border-gray-600 rounded-lg overflow-hidden">
-        <h2
-            class="w-full text-center py-2 font-medium text-gray-500 border border-b-0 rounded-t-lg border-gray-200 dark:border-gray-700 dark:text-gray-400 bg-gray-100 dark:bg-gray-800">
-            Login
-        </h2>
-        <div class="mx-auto px-3 py-3">
-            <form method="post">
-                {% csrf_token %}
-                {{ form|crispy }}
-                <div class="flex">
-                    <button type="submit"
-                        class="mx-auto text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Login</button>
-                </div>
-            </form>
-        </div>
+{% extends "jobs/base.html" %} {% load crispy_forms_tags %} {% block title %}
+Login | BJ {% endblock %} {% block content %}
+<div
+  id="login-wall"
+  class="w-100 h-100 d-flex justify-content-center align-items-center"
+>
+  <div
+    class="d-flex flex-column justify-content-center align-items-center"
+    style="width: 35%"
+  >
+    <div class="mb-2">
+      {% include 'jobs/components/logo.html' with color='white' %}
     </div>
-</div> -->
-
-
-
-<!-- <div class="tabbed-pane_tabbed-pane__2DfHq">
-    <div class="tabbed-pane_tabs__1rsRG">
-        <div class="tabbed-pane_tab-selected__3MxJq tabbed-pane__tab__2Q7yi">Sign up</div>
-        <div class="tabbed-pane_tab__1UGlv tabbed-pane__tab__2Q7yi">Sign in</div>
-    </div>
-    <div class="tabbed-pane_content__3zivd">
-        <div>
-            <h1 class="form-header_header__UhqWw">Create your account.</h1>
-            <p class="form-header_description__2ic93"><span>Build skills for today, tomorrow, and beyond.<br>Education
-                    to future-proof your career.</span></p>
+    <section
+      class="w-100 px-4 py-3 bg-white d-flex flex-column align-items-center"
+    >
+      <h5>Welcome Back</h5>
+      <button
+        class="bg-primary border-0 w-75 text-white align-items-center d-flex m-2"
+        style="opacity: 0.85; padding: 2px;"
+        type="button"
+      >
+        <span class="vds-button__content bg-white p-1" style="font-size: 14px">
+            <svg width="24" height="24" viewBox="0 0 24 24">
+              <g fill="none">
+                <path
+                  fill="#4285F4"
+                  d="M23.49,12.27 C23.49,11.48 23.42,10.73 23.3,10 L12,10 L12,14.51 L18.47,14.51 C18.18,15.99 17.33,17.24 16.07,18.09 L16.07,21.09 L19.93,21.09 C22.19,19 23.49,15.92 23.49,12.27 Z"
+                ></path>
+                <path
+                  fill="#34A853"
+                  d="M12,24 C15.24,24 17.95,22.92 19.93,21.09 L16.07,18.09 C14.99,18.81 13.62,19.25 12,19.25 C8.87,19.25 6.22,17.14 5.27,14.29 L1.29,14.29 L1.29,17.38 C3.26,21.3 7.31,24 12,24 Z"
+                ></path>
+                <path
+                  fill="#FBBC05"
+                  d="M5.27,14.29 C5.02,13.57 4.89,12.8 4.89,12 C4.89,11.2 5.03,10.43 5.27,9.71 L5.27,6.62 L1.29,6.62 C0.47,8.24 0,10.06 0,12 C0,13.94 0.47,15.76 1.29,17.38 L5.27,14.29 Z"
+                ></path>
+                <path
+                  fill="#EA4335"
+                  d="M12,4.75 C13.77,4.75 15.35,5.36 16.6,6.55 L20.02,3.13 C17.95,1.19 15.24,0 12,0 C7.31,0 3.26,2.7 1.29,6.62 L5.27,9.71 C6.22,6.86 8.87,4.75 12,4.75 Z"
+                ></path>
+              </g>
+            </svg>
+        </span>
+        <span class="flex-grow-1 "> Sign in with Google </span>
+      </button>
+      <form method="post" class="w-100 d-flex flex-column">
+        <div
+          class="w-100 text-center my-4 d-flex align-items-center position-relative"
+        >
+          <hr class="m-0 w-100" />
+          <p
+            class="bg-white p-2 rounded m-auto position-absolute"
+            style="left: 45%"
+          >
+            or
+          </p>
         </div>
-        <div class="form_alerts__2mutj">
-            <div>
-                <div class="alert_error__3rDC3 alert__alert__nhpvN alert_hidden__2ikXu">
-                    <div class="alert_hidden__2ikXu"><a></a></div>
-                </div>
+
+        {% csrf_token %} {{ form|crispy }}
+
+        <div class="d-flex justify-content-between align-items-center">
+            <!-- Checkbox -->
+            <div class="form-check mb-3 mb-md-0">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                value=""
+                id="loginCheck"
+                checked=""
+              />
+              <label class="form-check-label" for="loginCheck">
+                Remember me
+              </label>
             </div>
+
+            <!-- Forgot password link -->
+            <a href="#!">Forgot password?</a>
         </div>
-        <div>
-            <form method="post" action="/api/user/oauth/signup"><input type="hidden" name="next"
-                    value="https://learn.udacity.com"><input type="hidden" name="provider" value=""></form>
-            <div class="provider-buttons_buttons__tVEWg">
-                <div class="_provider-button_provider-button__3AGeE">
-                    <div class="_provider-button_button-wrapper--lowercase__1EWvo"><button
-                            class="vds-button vds-button--minimal vds-button--full vds-button__icon vds-button__icon--left"
-                            type="button"><span class="vds-button__content"><i class="vds-icon" role="img"
-                                    aria-label="google" aria-hidden="false"><svg width="24" height="24"
-                                        viewBox="0 0 24 24">
-                                        <g fill="none">
-                                            <path fill="#4285F4"
-                                                d="M23.49,12.27 C23.49,11.48 23.42,10.73 23.3,10 L12,10 L12,14.51 L18.47,14.51 C18.18,15.99 17.33,17.24 16.07,18.09 L16.07,21.09 L19.93,21.09 C22.19,19 23.49,15.92 23.49,12.27 Z">
-                                            </path>
-                                            <path fill="#34A853"
-                                                d="M12,24 C15.24,24 17.95,22.92 19.93,21.09 L16.07,18.09 C14.99,18.81 13.62,19.25 12,19.25 C8.87,19.25 6.22,17.14 5.27,14.29 L1.29,14.29 L1.29,17.38 C3.26,21.3 7.31,24 12,24 Z">
-                                            </path>
-                                            <path fill="#FBBC05"
-                                                d="M5.27,14.29 C5.02,13.57 4.89,12.8 4.89,12 C4.89,11.2 5.03,10.43 5.27,9.71 L5.27,6.62 L1.29,6.62 C0.47,8.24 0,10.06 0,12 C0,13.94 0.47,15.76 1.29,17.38 L5.27,14.29 Z">
-                                            </path>
-                                            <path fill="#EA4335"
-                                                d="M12,4.75 C13.77,4.75 15.35,5.36 16.6,6.55 L20.02,3.13 C17.95,1.19 15.24,0 12,0 C7.31,0 3.26,2.7 1.29,6.62 L5.27,9.71 C6.22,6.86 8.87,4.75 12,4.75 Z">
-                                            </path>
-                                        </g>
-                                    </svg></i>Sign up with Google</span></button></div>
-                </div>
-                <div class="_provider-button_provider-button__3AGeE">
-                    <div class="_provider-button_button-wrapper--lowercase__1EWvo"><button
-                            class="vds-button vds-button--minimal vds-button--full vds-button__icon vds-button__icon--left"
-                            type="button"><span class="vds-button__content"><i class="vds-icon" role="img"
-                                    aria-label="facebook" aria-hidden="false"><svg width="24" height="24"
-                                        viewBox="0 0 24 24">
-                                        <g fill="none" fill-rule="evenodd">
-                                            <path fill="#1877F2"
-                                                d="M24,12 C24,5.37257812 18.6274219,0 12,0 C5.37257813,0 0,5.37257812 0,12 C0,17.9895469 4.38822656,22.9539844 10.125,23.8541719 L10.125,15.46875 L7.078125,15.46875 L7.078125,12 L10.125,12 L10.125,9.35625 C10.125,6.34875 11.9165391,4.6875 14.6575547,4.6875 C15.9705,4.6875 17.34375,4.921875 17.34375,4.921875 L17.34375,7.875 L15.8305547,7.875 C14.3398828,7.875 13.875,8.80000781 13.875,9.74899219 L13.875,12 L17.203125,12 L16.6710937,15.46875 L13.875,15.46875 L13.875,23.8541719 C19.6117734,22.9539844 24,17.9895469 24,12">
-                                            </path>
-                                            <path fill="#FFF"
-                                                d="M16.6710938,15.46875 L17.203125,12 L13.875,12 L13.875,9.74899219 C13.875,8.80000781 14.3398828,7.875 15.8305547,7.875 L17.34375,7.875 L17.34375,4.921875 C17.34375,4.921875 15.9705,4.6875 14.6575547,4.6875 C11.9165391,4.6875 10.125,6.34875 10.125,9.35625 L10.125,12 L7.078125,12 L7.078125,15.46875 L10.125,15.46875 L10.125,23.8541719 C10.7359453,23.9500312 11.362125,24 12,24 C12.637875,24 13.2640547,23.9500312 13.875,23.8541719 L13.875,15.46875 L16.6710938,15.46875 Z">
-                                            </path>
-                                        </g>
-                                    </svg></i>Sign up with Facebook</span></button></div>
-                </div>
-            </div>
+
+        <!-- Submit button -->
+        <button type="submit" class="btn btn-primary btn-block my-5 w-100">
+          Sign in
+        </button>
+
+        <!-- Register buttons -->
+        <div class="text-center">
+          <p>Not a member? <a href="{% url 'signup' %}">Register</a></p>
         </div>
-        <div class="or-separator_contain__3YaFK">
-            <p class="or-separator_or__1tzqc">or</p>
-        </div>
-        <div>
-            <div>
-                <div></div>
-                <div class="form_alerts__2mutj">
-                    <div>
-                        <div class="alert_success__1bTs6 alert__alert__nhpvN alert_hidden__2ikXu">
-                            <div class="alert_hidden__2ikXu"><a></a></div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="alert_error__3rDC3 alert__alert__nhpvN alert_hidden__2ikXu">
-                            <div class="alert_hidden__2ikXu"><a></a></div>
-                        </div>
-                    </div>
-                </div>
-                <form>
-                    <fieldset class="vds-form-fieldset">
-                        <legend class="vds-form-fieldset__title"></legend>
-                        <div class="vds-text-input"><label class="vds-text-input__label vds-visually-hidden"
-                                for="first-name">First Name</label><input class="vds-text-input__input" id="first-name"
-                                placeholder="First Name" required="" type="text" value=""></div>
-                        <div class="vds-text-input"><label class="vds-text-input__label vds-visually-hidden"
-                                for="last-name">Last Name</label><input class="vds-text-input__input" id="last-name"
-                                placeholder="Last Name" required="" type="text" value=""></div>
-                        <div class="vds-text-input"><label class="vds-text-input__label vds-visually-hidden"
-                                for="email">Email Address</label><input class="vds-text-input__input" id="email"
-                                placeholder="Email Address" required="" type="text" value=""></div>
-                        <div class="password-creator_password_creator__34Yr8">
-                            <div class="revealable-password_revealable_password__14MVz">
-                                <div class="vds-text-input"><label class="vds-text-input__label vds-visually-hidden"
-                                        for="revealable-password">Password</label><input class="vds-text-input__input"
-                                        id="revealable-password" placeholder="Password" required="" type="password"
-                                        value=""></div><span class="revealable-password_icon_container__1qdtE"><i
-                                        class="vds-icon vds-color--silver" role="img" aria-label="view on"
-                                        aria-hidden="false"><svg viewBox="0 0 32 32">
-                                            <path
-                                                d="M16 9c4.45 0 8.076 2.417 10.73 6.997a2 2 0 01-.088 2.145C23.96 21.998 20.357 24 16 24c-4.357 0-7.96-2.002-10.642-5.858a2 2 0 01-.088-2.145C7.924 11.417 11.55 9 16 9zm0 2c-3.682 0-6.682 2-9 6 2.318 3.333 5.318 5 9 5 3.682 0 6.682-1.667 9-5-2.318-4-5.318-6-9-6zm0 1a4 4 0 110 8 4 4 0 010-8zm0 2a2 2 0 100 4 2 2 0 000-4z">
-                                            </path>
-                                        </svg></i></span>
-                            </div>
-                        </div>
-                        <div class="tos-blurb" label="Terms of Service"><span>By clicking "Sign up," you agree to our <a
-                                    href="https://www.udacity.com/legal/terms-of-service">Terms of Use</a> and our <a
-                                    href="https://www.udacity.com/legal/privacy">Privacy Policy</a>.</span></div><button
-                            class="vds-button vds-button--primary" type="button"><span class="vds-button__content">Sign
-                                up</span></button>
-                    </fieldset>
-                </form>
-            </div>
-        </div>
-    </div>
-</div> -->
 
-
-<div class="bg-white border rounded m-auto my-4" style="width: 26rem;">
-    <section class="w-100 px-4 py-3">
-        <h2 class="mb-4">Login to Carket</h2>
-        <form method="post" class="d-flex flex-column">
-            <div class="text-center">
-                <button class="bg-white border rounded p-2 m-2" type="button">
-                    <span class="vds-button__content" style="font-size: 14px;">
-                        <i class="vds-icon p-2" role="img" aria-label="google" aria-hidden="false">
-                            <svg width="24" height="24" viewBox="0 0 24 24">
-                                <g fill="none">
-                                    <path fill="#4285F4"
-                                        d="M23.49,12.27 C23.49,11.48 23.42,10.73 23.3,10 L12,10 L12,14.51 L18.47,14.51 C18.18,15.99 17.33,17.24 16.07,18.09 L16.07,21.09 L19.93,21.09 C22.19,19 23.49,15.92 23.49,12.27 Z">
-                                    </path>
-                                    <path fill="#34A853"
-                                        d="M12,24 C15.24,24 17.95,22.92 19.93,21.09 L16.07,18.09 C14.99,18.81 13.62,19.25 12,19.25 C8.87,19.25 6.22,17.14 5.27,14.29 L1.29,14.29 L1.29,17.38 C3.26,21.3 7.31,24 12,24 Z">
-                                    </path>
-                                    <path fill="#FBBC05"
-                                        d="M5.27,14.29 C5.02,13.57 4.89,12.8 4.89,12 C4.89,11.2 5.03,10.43 5.27,9.71 L5.27,6.62 L1.29,6.62 C0.47,8.24 0,10.06 0,12 C0,13.94 0.47,15.76 1.29,17.38 L5.27,14.29 Z">
-                                    </path>
-                                    <path fill="#EA4335"
-                                        d="M12,4.75 C13.77,4.75 15.35,5.36 16.6,6.55 L20.02,3.13 C17.95,1.19 15.24,0 12,0 C7.31,0 3.26,2.7 1.29,6.62 L5.27,9.71 C6.22,6.86 8.87,4.75 12,4.75 Z">
-                                    </path>
-                                </g>
-                            </svg>
-                        </i>
-                        Continue with Google
-                    </span>
-                </button>
-            </div>
-            
-            <div class="w-100 text-center my-4 d-flex align-items-center position-relative">
-                <hr class="m-0 w-100"/>
-                <p class="bg-white p-2 rounded m-auto position-absolute" style="left: 45%;">or</p>
-            </div>
-
-            {% csrf_token %}
-            {{ form|crispy }}
-
-
-            <div class="row mb-4">
-                <div class="col-md-6 d-flex justify-content-center">
-                    <!-- Checkbox -->
-                    <div class="form-check mb-3 mb-md-0">
-                        <input class="form-check-input" type="checkbox" value="" id="loginCheck" checked="">
-                        <label class="form-check-label" for="loginCheck"> Remember me </label>
-                    </div>
-                </div>
-
-                <div class="col-md-6 d-flex justify-content-center">
-                    <!-- Simple link -->
-                    <a href="#!">Forgot password?</a>
-                </div>
-            </div>
-
-            <!-- Submit button -->
-            <button type="submit" class="btn btn-primary btn-block mb-4 w-100">Sign in</button>
-
-            <!-- Register buttons -->
-            <div class="text-center">
-                <p>Not a member? <a href="{% url 'signup' %}">Register</a></p>
-            </div>
-        </form>
+      </form>
     </section>
+  </div>
 </div>
 {% endblock %}
