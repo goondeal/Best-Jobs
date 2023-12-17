@@ -25,6 +25,10 @@ class UserBase(AbstractUser):
 
     objects = CustomUserManager()
 
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.type = self.base_type
+        return super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.get_full_name()} - {self.type}'
@@ -75,7 +79,13 @@ class User(UserBase):
 # COMPANY
 class Industry(models.Model):
     name = models.CharField(max_length=150)
+    slug = models.SlugField(unique=True, allow_unicode=True, editable=False)
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name, allow_unicode=True)
+        super(Industry, self).save(*args, **kwargs)
+    
     def __str__(self) -> str:
         return self.name
 
@@ -92,7 +102,7 @@ class CompanyInfo(models.Model):
     
     size = models.PositiveIntegerField(validators=[MinValueValidator(1)])
     
-    industry = models.ManyToManyField(Industry, related_name='companies')
+    industry = models.ForeignKey(Industry, on_delete=models.PROTECT, related_name='companies')
 
 
     @property
