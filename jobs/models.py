@@ -1,14 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator
-from accounts.models import Company, User
+from accounts.models import Company, User, Industry
 from locations.models import City
-
-
-class JobCategory(models.Model):
-    name = models.CharField(max_length=155)
-
-    def __str__(self) -> str:
-        return self.name
 
 
 class Skill(models.Model):
@@ -62,11 +55,11 @@ class Job(models.Model):
         ('VOLUNTEERING', 'Volunteering'),
     )
     type = models.CharField(max_length=155, choices=_JOB_TYPES)
-    category = models.ManyToManyField(JobCategory, related_name='jobs')
+    industry = models.ManyToManyField(Industry)
     city = models.ForeignKey(City, on_delete=models.PROTECT)
     _CAREER_LEVELS = (
         ('EXPERIENCED', 'Experienced Non-Manager'),
-        ('Manager', 'Manager'),
+        ('MANAGER', 'Manager'),
         ('SENIOR', 'Senior'),
         ('MID_LEVEL', 'Mid-Level'),
         ('ENTRY_LEVEL', 'Entry-Level Junior/Fresh-Grad'),
