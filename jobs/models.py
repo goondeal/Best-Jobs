@@ -1,4 +1,6 @@
+from datetime import datetime
 from django.db import models
+from django.utils.text import slugify
 from django.core.validators import MinValueValidator
 from accounts.models import Company, User, Industry
 from locations.models import City
@@ -44,8 +46,9 @@ class JobQuestionAnswer(models.Model):
 
 
 class Job(models.Model):
-    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='jobs')
     title = models.CharField(max_length=155)
+    slug = models.SlugField(unique=True, allow_unicode=True, editable=False)
     _JOB_TYPES = (
         ('FULL_TIME', 'Full Time'),
         ('PART_TIME', 'Part Time'),
@@ -55,8 +58,8 @@ class Job(models.Model):
         ('VOLUNTEERING', 'Volunteering'),
     )
     type = models.CharField(max_length=155, choices=_JOB_TYPES)
-    industry = models.ManyToManyField(Industry)
-    city = models.ForeignKey(City, on_delete=models.PROTECT)
+    industry = models.ForeignKey(Industry, on_delete=models.PROTECT, related_name='jobs')
+    city = models.ForeignKey(City, on_delete=models.PROTECT, related_name='jobs')
     _CAREER_LEVELS = (
         ('EXPERIENCED', 'Experienced Non-Manager'),
         ('MANAGER', 'Manager'),
@@ -89,6 +92,31 @@ class Job(models.Model):
             models.Index(fields=['company'], name='job_company_index'),
             models.Index(fields=['city'], name='job_city_index')
         ]
+
+    @property
+    def get_job_type_str(self):
+        for type in self._JOB_TYPES:
+            if type[0] == self.type:
+                return type[1]
+        return self.type            
+
+    @property
+    def get_career_level_str(self):
+        for level in self._CAREER_LEVELS:
+            if level[0] == self.career_level:
+                return level[1]
+        return self.career_level            
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            slug = slugify(self.title, allow_unicode=True)
+            if Job.objects.filter(slug=slug).exists():
+                slug = slugify(f'{self.title} {self.company}', allow_unicode=True)
+                while Job.objects.filter(slug=slug).exists():
+                    random_num = str(datetime.now().timestamp()).split('.')[-1][-3:]
+                    slug = slugify(f'{self.title} {self.company} {random_num}', allow_unicode=True)
+            self.slug = slug
+        super(Job, self).save(*args, **kwargs)
 
     def __str__(self) -> str:
         return f'{self.company} - {self.title}'    

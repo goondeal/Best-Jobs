@@ -1,5 +1,5 @@
-<header>
-    <nav class="navbar navbar-expand-xl navbar-transparent bg-transparent">
+<header class="bg-white">
+    <nav class="navbar navbar-expand-xl navbar-transparent bg-transparent position-">
         <div class="container flex justify-content-between align-items-center">
             {% include './logo.html' %}
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -7,8 +7,12 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto align-items-center">
                     {% if user.is_authenticated %}
+                    <li class="nav-item mx-2 text-uppercase text-dark"><a class="text-decoration-none" href="{% url 'search_jobs' %}" target="_blank" rel="noopener noreferrer">search</a></li>
+                    <li class="nav-item mx-2 text-uppercase text-dark"><a class="text-decoration-none" href="{% url 'saved_jobs' %}" target="_blank" rel="noopener noreferrer">saved</a></li>
+                    <li class="nav-item mx-2 me-4 text-uppercase text-dark"><a class="text-decoration-none" href="{% url 'applications' %}" target="_blank" rel="noopener noreferrer">applications</a></li>
+                    
                     <li class="nav-item">
                         <div class="btn-group">
                             <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown"

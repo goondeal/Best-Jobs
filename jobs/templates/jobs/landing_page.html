@@ -1,7 +1,49 @@
 {% extends './layout.html' %}
 
-{% block 'title' %} Jobs in {{country.name}} {% end block %}
+{% block title %} Jobs in {{country.name}} {% endblock %}
 
-{% block 'inner_content' %}
-<div>{{jobs_count}}</div>
-{% end block %}
+{% block inner_content %}
+<div id="hero">
+    <div class="h-100 container">Jobs Count in {{country.name}}: {{jobs_count}}</div>
+</div>
+<div id="top-companies" class="py-4">
+    <h2>Top Companies in {{country.name}}</h2>
+    {% for c in top_companies %}
+    <img src="{{c.logo.url}}" alt="{{c.name}}">
+    {% endfor %}
+</div>
+<div id="demo-slider" class="py-4"></div>
+<div id="latest-jobs" class="py-4">
+    <h2>Latest Jobs in {{country.name}}</h2>
+    {% for job in latest_jobs %}
+    <div>{{job.title}}</div>
+    {% endfor %}
+    <a href="#">See all new jobs ...</a>
+</div>
+<div id="join-now" class="py-4">
+    <h3>Get ready for more opportunities!</h3>
+    <p>You are minutes away from the right job.</p>
+    <a href="#">Join Now</a>
+</div>
+<div id="browse-jobs-by-career-level" class="py-4">
+    <h3>Browse Jobs By career level</h3>
+    <div>Senior Management Jobs</div>
+    <div>Management Jobs</div>
+    <div>Experienced Jobs</div>
+    <div>Entry Level Jobs</div>
+    <div>Internships</div>
+    <div>All Jobs</div>
+</div>
+<div id="browse-jobs-by-category" class="py-4">
+    <h3>Browse Jobs By category</h3>
+    {% for category in job_categories %}
+    <div>{{category.name}}</div>
+    {% endfor %}
+</div>
+<div id="browse-jobs-by-locations" class="py-4">
+    <h3>Browse Jobs By location</h3>
+    {% for location in locations %}
+    <a href="#">Jobs in {{location.name}}</a>
+    {% endfor %}
+</div>
+{% endblock %}

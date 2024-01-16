@@ -1,22 +1,18 @@
-{% extends "jobs/base.html" %} {% load crispy_forms_tags %} {% block title %}
-Login | BJ {% endblock %} {% block content %}
-<div
-  id="login-wall"
-  class="w-100 h-100 d-flex justify-content-center align-items-center"
->
-  <div
-    class="d-flex flex-column justify-content-center align-items-center"
-    style="width: 35%"
-  >
+{% extends "jobs/base.html" %} 
+
+{% load crispy_forms_tags %} 
+
+{% block title %} Login | BJ {% endblock title %} 
+
+{% block content %}
+<div id="login-wall" class="w-100 h-100 d-flex justify-content-center align-items-center">
+  <div class="d-flex flex-column justify-content-center align-items-center" style="width: 30%">
     <div class="mb-2">
-      {% include 'jobs/components/logo.html' with color='white' %}
+      <span class="fs-1 text-uppercase text-white fw-bold">best jobs</span>
     </div>
-    <section
-      class="w-100 px-4 py-3 bg-white d-flex flex-column align-items-center"
-    >
+    <section class="w-100 px-4 py-3 bg-white d-flex flex-column align-items-center">
       <h5>Welcome Back</h5>
-      <button
-        class="bg-primary border-0 w-75 text-white align-items-center d-flex m-2"
+      <button class="bg-primary border-0 w-75 text-white align-items-center d-flex m-2"
         style="opacity: 0.85; padding: 2px;"
         type="button"
       >
@@ -92,4 +88,4 @@ Login | BJ {% endblock %} {% block content %}
     </section>
   </div>
 </div>
-{% endblock %}
+{% endblock content %}

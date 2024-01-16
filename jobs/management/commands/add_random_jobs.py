@@ -7,7 +7,7 @@ from jobs.models import *
 
 
 class Command(BaseCommand):
-    help = 'Adds jobs data to the db'
+    help = 'Adds random jobs to the db'
 
     def add_arguments(self, parser):
         parser.add_argument('file_path', type=str, help='path to <file>.json')
@@ -18,64 +18,18 @@ class Command(BaseCommand):
         with open(file=fpath, mode='r', encoding='utf-8') as f:
             data = json.loads(f.read())
 
-        logger = logging.getLogger('django')                    
+        logger = logging.getLogger('django')                  
         
-        industries = [
-            i for i in Industry.objects.all()
-            # Industry.objects.create(name=industry_data['name'])
-            # for industry_data in data['industries']
-        ]
-        logger.info(f'{len(industries)} industries were created')
-        skills = [
-            s for s in Skill.objects.all()
-            # Skill.objects.create(name=skill_data['name'])
-            # for skill_data in data['skills']
-        ]
-        logger.info(f'{len(skills)} skills were created')
+        industries = [i for i in Industry.objects.all()]
+        skills = [s for s in Skill.objects.all()]
 
-        from pathlib import Path
-        p = Path(__file__).resolve().parent.parent.parent.parent / 'media/company-logo'
-        companies_names = [f.name for f in p.iterdir() if f.is_file()]
-        logger.info(f'Got {len(companies_names)} comanies names')
-        cities = City.objects.all()
-        cities = City.objects.filter(state__country__code='eg')
-        for company_data in data['companies']:
-            name, ext = random.choice(companies_names).split('.')
-            company = Company.objects.create(
-                email=f'user{random.randint(0, 99)}@{name.lower().replace(" ", "")}.com',
-            )
-            company.set_password('123456')
-            info = CompanyInfo.objects.create(
-                company=company,
-                name=name,
-                description=company_data['description'],
-                foundation_year=random.randint(1900, 2020),
-                logo=f'{name}.{ext}',
-                city=random.choice(cities),
-                size=random.randint(2, 2000),
-                industry=random.choice(industries)
-            )
-            logger.info(f'Company {info.name} were created.')
-            questions = random.sample(data['questions'], k=random.choice([3, 4]))
-            for q in questions:
-                question = JobQuestion.objects.create(
-                    company=company,
-                    question=q['question'],
-                    optional=random.choice([False, True, False])
-                )
-                if q.get('answers'):
-                    for a in q.get('answers'):
-                        JobQuestionAnswer.objects.create(
-                            question=question,
-                            value=a
-                        )
-
-            # logger.info(f'{len(questions)} questions were added')
-            jobs_count = random.randint(0, 5)
+        companies = random.sample(list(Company.objects.all()), k=10)
+        for company in companies:
+            jobs_count = 2
             for i in range(jobs_count):
-                roles = list(filter(lambda x: x['name'] == info.industry.name, data['industries']))[0]['roles']
+                roles = list(filter(lambda x: x['name'] == company.data.industry.name, data['industries']))[0]['roles']
                 role = random.choice(roles)
-                _cities = [info.city, random.choice(City.objects.filter(state__country=info.city.state.country))]
+                _cities = [company.data.city, random.choice(City.objects.filter(state__country=company.data.city.state.country))]
                 min_salary=random.choice(range(3, 51))*1000
                 job = Job.objects.create(
                     company=company,
@@ -103,11 +57,14 @@ class Command(BaseCommand):
                     what_we_offer=random.choice(['', """Great Environment.\n401 Package.\nWork-life balance."""]),
                     keep_company_confidential=random.choice([True, False])
                 )
-                c_skills=random.sample(skills, k=random.randint(3, 15))
+                c_skills=random.sample(skills, k=random.randint(6, 15))
                 for s in c_skills:
                     job.skills.add(s)
                 for q in company.questions.all():
                     job.questions.add(q)
-                job.save()      
+                job_industries = random.sample(industries, k=2)
+                for industry in job_industries:
+                    job.industry.add(industry)
+                job.save()
 
             logger.info(f'{jobs_count} jobs were added')

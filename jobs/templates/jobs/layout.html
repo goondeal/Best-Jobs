@@ -1,10 +1,13 @@
 {% extends './base.html' %}
 
 {% block content %}
-{% include './components/header.html' %}
+
+    {% include './components/header.html' %}
     
-    {% block inner_content %}
-    {% endblock %}
+    {% block inner_content %} {% endblock inner_content %}
     
-    {% include './components/footer.html' %}
-{% endblock %}
+    <footer class="w-100">
+        {% include './components/footer.html' %}
+    </footer>
+
+{% endblock content %}

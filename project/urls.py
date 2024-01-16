@@ -3,7 +3,7 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 from accounts.views import SignupView
-from jobs.views import index, country_jobs
+from jobs.views import index, country_jobs, JobsView, JobDetail
 
 
 urlpatterns = [
@@ -13,7 +13,11 @@ urlpatterns = [
     
     # jobs
     path('', index, name='index'),
-    path('jobs/<str:country_code>', country_jobs, name='country_jobs'),
+    path('<str:country_code>/jobs', country_jobs, name='country_jobs'),
+    path('jobs/<slug:slug>', JobDetail.as_view(), name='job_detail'),
+    path('search', JobsView.as_view(), name='search_jobs'),
+    path('saved', JobsView.as_view(), name='saved_jobs'),
+    path('applications', JobsView.as_view(), name='applications'),
 
 
     # admin
