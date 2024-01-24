@@ -1,4 +1,4 @@
-from django.db.models import Count, F
+from django.db.models import Count, F, Min, Max
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Job
 from locations.models import *
@@ -40,7 +40,7 @@ class JobsView(ListView):
             'states': params.getlist('state'),
             'cities': params.getlist('city'),
             'min_yrs': params.get('min_years', '0'),
-            'max_yrs': params.getlist('max_years'),
+            'max_yrs': params.get('max_years'),
             'levels': params.getlist('level'),
             'categories': params.getlist('category'),
             'types': params.getlist('type'),
@@ -58,19 +58,18 @@ class JobsView(ListView):
             result = result.filter(career_level__in=levels)
         # filter by years_of_exp
         min_yrs = kwargs.get('min_yrs')
+        result = result.filter(min_years_of_experience__gte=min_yrs)
         max_yrs = kwargs.get('max_yrs')
-        if min_yrs:
-            result = result.filter(min_years_of_experience__gte=min_yrs)
         if max_yrs:
             result = result.filter(min_years_of_experience__lte=max_yrs)
-        # filter by category
-        categories = kwargs.get('categories')
-        if categories:
-            result = result.filter(industry__in=categories)
         # filter by type
         types = kwargs.get('types')
         if types:
             result = result.filter(type__in=types)
+        # filter by category
+        categories = kwargs.get('categories')
+        if categories:
+            result = result.filter(industry__in=categories)
         
         # filter by location
         countries = kwargs.get('countries')
@@ -113,9 +112,24 @@ class JobsView(ListView):
                 .filter(jobs_count__gt=0)\
                 .order_by('-jobs_count')
             context['career_level_jobs'] = list(career_level_jobs)
-            # print('career_level_jobs id =', id(career_level_jobs))
             
+            filters = params.copy()
+            max_yrs_of_exp = self._filter_queryset(queryset, **filters)\
+                .aggregate(years=Max('max_years_of_experience'))
+            print('max_yrs_of_exp =', max_yrs_of_exp)
+            context['years'] = range((max_yrs_of_exp.get('years') or 20) +1)
+
             # annotate by job category (industry)
+            filters = params.copy()
+            filters.pop('categories', '')
+            categories_jobs = self._filter_queryset(queryset, **filters)\
+                .prefetch_related('industry')\
+                .values('industry__id', 'industry__name')\
+                .annotate(id=F('industry__id'), name=F('industry__name'))\
+                .annotate(jobs_count=Count('industry__name'))\
+                .filter(jobs_count__gt=0)\
+                .order_by('-jobs_count')
+            context['categories'] = list(categories_jobs)
             
             # annotate by job type
             filters = params.copy()
@@ -170,3 +184,21 @@ class JobsView(ListView):
 
 class JobDetail(DetailView):
     model = Job
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        job = self.get_object()
+        context['featured_jobs'] = Job.objects.filter(industry=job.industry)[:16]
+        context['similar_jobs'] = Job.objects.filter(industry=job.industry)[:16]
+        return context
+
+class CompanyDetail(DetailView):
+    model = CompanyInfo
+    template_name = 'jobs/company_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # job = self.get_object()
+        # context['featured_jobs'] = Job.objects.filter(industry=job.industry)[:16]
+        # context['similar_jobs'] = Job.objects.filter(industry=job.industry)[:16]
+        return context

@@ -1,0 +1,87 @@
+{% extends './layout.html' %}
+
+{% block title %} Jobs at {{ companyinfo.name }} | BestJobs {%endblock %}
+
+{% load static %}
+{% load humanize %}
+{% load time_ago %}
+
+
+{% block inner_content %}
+<div>
+    <div class="bg-white">
+        <div class="container">
+            <div>
+                <div class="bg-secondary" style="height: 200px;">
+                    {% if companyinfo.cover %}
+                        <img src="{{companyinfo.cover.url}}" alt="{{companyinfo.name}}">
+                    {% endif %}
+                </div>
+                <div class="py-2 px-5 d-flex">
+                    <img src="{{companyinfo.logo.url}}" alt="{{companyinfo.name}}" style="margin-top: -3rem;">
+                    <div class="ms-2">
+                        <h1 class="mb-1 fs-5">{{ companyinfo.name }}</h1>
+                        <span class="d-block text-muted">{{ companyinfo.industry }}</span>
+                        <span class="text-muted">{{ companyinfo.location }} . {{ companyinfo.size_category }} employees </span>
+                    </div>
+                </div>
+                <nav class="mt-5">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="#info">Company Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" aria-current="page" href="#jobs">Jobs</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="my-3 row gx-3">
+            <div class="col-sm-12 col-lg-9">
+                <div id="info" class="card mb-3 p-4">
+                    <h2 class="fs-5 mb-3">Company Profile</h2>
+                    <span class="text-muted mb-1">Location: {{companyinfo.location }}</span>
+                    <span class="text-secondary mb-1">Industry: {{companyinfo.industry }}</span>
+                    <span class="text-secondary mb-1">Company Size: {{companyinfo.size_category }} employees</span>
+                    <p class="text-secondary my-2">{{ companyinfo.description }}</p>
+                </div>
+                <div id="jobs" class="card my-3 p-4">
+                    <h2 class="fs-5 mb-3">Open Vacancies at {{ companyinfo.name }}</h2>
+                    <div>
+                        {% for job in companyinfo.company.jobs.all %}
+                            <div class="card my-3 p-3">
+                                <a href="{% url 'job_detail' slug=job.slug %}" class="text-decoration-none">
+                                    <h3 class="fs-6 fw-bold m-0 d-inline-block">{{ job.title }}</h3>  <small class="text-muted" style="font-size: 14px;"> - {{ job.location }}</small>
+                                </a>
+                                <div class="card-body p-0">
+                                    <span class="badge bg-secondary d-inline-block mb-2">{{ job.get_job_type_str }}</span>
+                                    <div class="text-muted mt-2" style="font-size: 14px; max-width: 70%;">
+                                        {% for skill in job.skills.all %}
+                                            <span class="me-2 mb-2">{{skill}}</span>
+                                        {% endfor %}
+                                        <span class="{% if job.created_at|weekpassed %} text-muted {% else %} text-success {% endif %}" style="font-size: 12px; font-weight: 400;">{{ job.created_at|timeago }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-lg-3">
+                <div class="card p-3">
+                    <h2 class="fs-6">Explore jobs tailored to you!</h2>
+                    <p class="text-secondary my-2" style="font-size: 14px;">
+                        Explore more jobs recommended for you and tailored to your career interests.
+                    </p>
+                    <a href="{% url 'search_jobs' %}" class="mt-3 btn btn-light text-primary">
+                        Explore Jobs
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock inner_content %}

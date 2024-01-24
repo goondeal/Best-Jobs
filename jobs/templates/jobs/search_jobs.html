@@ -15,7 +15,7 @@
                     <div class="accordion" id="filters">
                         <div class="accordion-item border-0">
                         <h2 class="accordion-header" id="country-filter-label">
-                            <button class="accordion-button bg-white border-0" type="button" data-bs-toggle="collapse" data-bs-target="#country-filter" aria-expanded="true" aria-controls="country-filter">
+                            <button class="accordion-button bg-white border-0" type="button" data-bs-toggle="collapse" data-bs-target="#country-filter" aria-expanded="false" aria-controls="country-filter">
                             Country
                             </button>
                         </h2>
@@ -86,12 +86,41 @@
                                 </button>
                             </h2>
                             <div id="years-filter" class="accordion-collapse collapse show" aria-labelledby="years-filter-label">
-                                <div class="accordion-body">
-                                    {% comment %}
-                                    <select onchange="this.form.submit()" name="city" class="form-control" multiple>
-                                        <option class="py-1 my-1" value="{{ a.name }}" {% if a.name in request.GET|get_list:'city' %} selected {% endif %}>{{a.name}} ({{ a.jobs_count }})</option>
+                                <div class="accordion-body d-flex justify-content-between align-items-center">
+                                    <select onchange="this.form.submit()" name="min_years" class="form-control me-2">
+                                        <option value="" disabled selected hidden>Min</option>
+                                        {% for i in years %}
+                                        <option value="{{i}}">{{i}}</option>
+                                        {% endfor %}
                                     </select>
-                                    {% endcomment %}
+                                    <select onchange="this.form.submit()" name="max_years" class="form-control">
+                                        <option value="" disabled selected hidden>Max</option>
+                                        {% for i in years %}
+                                            <option value="{{i}}">{{i}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item border-0">
+                            <h2 class="accordion-header" id="category-filter-label">
+                                <button class="accordion-button bg-white border-0" type="button" data-bs-toggle="collapse" data-bs-target="#category-filter" aria-expanded="true" aria-controls="category-filter">
+                                Job Category
+                                </button>
+                            </h2>
+                            <div id="category-filter" class="accordion-collapse collapse show" aria-labelledby="category-filter-label">
+                                <div class="accordion-body">
+                                    <select onchange="this.form.submit()" name="category" class="form-control" multiple>
+                                    {% for c in categories %}
+                                        <option class="py-1 my-1" value="{{ c.id }}" {% if c.id in request.GET|get_list:'category' %} selected {% endif %}>{{c.name}} ({{ c.jobs_count }})</option>
+                                        {% comment %}
+                                        <div class="my-1 d-flex align-items-center">
+                                            <input class="me-2" type="checkbox" name="country" value="{{c.name}}">
+                                            <label for="{{c.name}}">{{c.name}} ({{ c.jobs_count }})</label>
+                                        </div>
+                                        {% endcomment %}
+                                    {% endfor %}
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -188,7 +217,7 @@
                     </div>
                 </div>
                 {% for job in jobs %}
-                    {% include './components/job_card.html' with job=job %}
+                    {% include './components/job_card.html' with job=job full=True %}
                 {% endfor %}
                 
                 {% if page_obj.has_other_pages %}

@@ -52,7 +52,7 @@ def weekpassed(value, arg=None):
     today = datetime.now(tzinfo)
     delta = today - value
     
-    return delta.days > 7
+    return delta.days > 6
     # if delta.days < 1:
     #     fa_str = _("ago")
     # else:

@@ -2,11 +2,13 @@
 
 {% block content %}
 
-    {% include './components/header.html' %}
+    <header class="bg-white w-100 position-sticky">        
+        {% include './components/header.html' %}
+    </header>
     
     {% block inner_content %} {% endblock inner_content %}
     
-    <footer class="w-100">
+    <footer class="w-100" style="background-color: #001433; color: white">
         {% include './components/footer.html' %}
     </footer>
 

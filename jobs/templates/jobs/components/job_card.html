@@ -2,30 +2,39 @@
 {% load time_ago %}
 {% load static %}
 
-<div class="card mb-3 bg-white p-3 my-3">
+<div class="card bg-white p-3 {% if not full %} my-0 border-0 {% else %} my-3 {% endif %}">
     <div class="row g-0">
-        <div class="d-flex">
-            <div style="width: 60px; height: 60px; background-image: url('{% if job.keep_company_confidential %} {% static 'images/company.png' %} {% else %} {{job.company.data.logo.url}} {% endif %}'); background-repeat: no-repeat; background-position: center; background-size: contain;">
-                <!-- <img src="{{job.company.data.logo.url}}" alt="{{job.company.data.name}}" > -->
-            </div>
-            <div class="ms-2">
-                <a href="{% url 'job_detail' slug=job.slug %}" class="card-title fw-bold fs-6 text-decoration-none">{{job.title}}</a>
-                <p class="m-0" style="font-size: 12px; font-weight: 500;">
-                    <small>{% if job.keep_company_confidential %} {{'Confidential'}} {% else %} {{job.company.data.name}} {% endif %}</small> - <small class="text-muted">{{ job.company.data.location }}</small>
-                </p>
-                <span class="{% if job.created_at|weekpassed %} text-muted {% else %} text-success {% endif %}" style="font-size: 12px; font-weight: 400;">{{ job.created_at|timeago }}</span>
-            </div>
-        </div>
-      <div class="">
-        <div class="card-body px-2 mt-2 py-0">
-          <span class="badge bg-secondary">{{ job.get_job_type_str }}</span>
-          <p class="card-text mt-2 text-secondary" style="font-size: 14px; font-weight: 500;">
-            {{ job.get_career_level_str }} - <span class="text-capitalize">{{ job.min_years_of_experience }}-{{ job.max_years_of_experience }} yrs of exp</span> - 
-            {% for skill in job.skills.all %}
-                {{skill}}-
-            {% endfor %}
+      <div class="d-flex">
+        <a href="{% url 'company_detail' slug=job.company.data.slug %}" target="_blank">
+          <div style="width: 60px; height: 60px; background-image: url('{% if job.keep_company_confidential %} {% static 'images/company.png' %} {% else %} {{job.company.data.logo.url}} {% endif %}'); background-repeat: no-repeat; background-position: center; background-size: contain;">
+          </div>
+        </a>
+        <div class="ms-2">
+          <a href="{% url 'job_detail' slug=job.slug %}" class="card-title fw-bold fs-6 text-decoration-none">{{job.title}}</a>
+          <p class="m-0" style="font-size: 12px; font-weight: 500;">
+              <small>
+                {% if job.keep_company_confidential %}
+                  {{'Confidential'}}
+                {% else %}
+                  <a class="text-dark text-decoration-none" href="{% url 'company_detail' slug=job.company.data.slug %}" target="_blank">{{job.company.data.name}}</a>
+                {% endif %}
+              </small> - <small class="text-muted">{{ job.company.data.location }}</small>
           </p>
+          <span class="{% if job.created_at|weekpassed %} text-muted {% else %} text-success {% endif %}" style="font-size: 12px; font-weight: 400;">{{ job.created_at|timeago }}</span>
         </div>
       </div>
+      {% if full %}
+        <div>
+          <div class="card-body px-2 mt-2 py-0">
+            <span class="badge bg-secondary">{{ job.get_job_type_str }}</span>
+            <p class="card-text mt-2 text-secondary" style="font-size: 14px; font-weight: 500;">
+              {{ job.get_career_level_str }} - <span class="text-capitalize">{{ job.min_years_of_experience }}-{{ job.max_years_of_experience }} yrs of exp</span> - 
+              {% for skill in job.skills.all %}
+                  {{skill}}-
+              {% endfor %}
+            </p>
+          </div>
+        </div>
+      {% endif %}
     </div>
   </div>

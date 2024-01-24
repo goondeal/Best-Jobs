@@ -94,6 +94,10 @@ class Job(models.Model):
         ]
 
     @property
+    def location(self):
+        return f'{self.city}, {self.city.state}, {self.city.state.country}'
+
+    @property
     def get_job_type_str(self):
         for type in self._JOB_TYPES:
             if type[0] == self.type:
