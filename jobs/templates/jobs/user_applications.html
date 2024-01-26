@@ -1,0 +1,104 @@
+{% extends './layout.html' %}
+
+{% block title %} Applications | BestJobs {%endblock %}
+
+{% load static %}
+{% load humanize %}
+{% load time_ago %}
+
+
+{% block inner_content %}
+<div class="container mt-4 min-vh-100">
+    <div class="row">
+        <div class="col-sm-12 col-lg-8 m-auto">
+            <h2 class="text-capitalize fs-4 mb-4"><span id="jobs-count">{{jobs.count}}</span> saved jobs</h2>
+            <div class="my-3">
+                {% for job in jobs %}
+                <div id="job-{{job.id}}" class="bg-white my-4 border position-relative">
+                    {% include './components/job_card.html' with job=job full=True %}
+                    <div class="actions px-3 py-2 d-flex align-items-center">
+                        <button onclick="unsave('{{job.id}}')" class="btn text-primary">
+                            <span>
+                                <i size="20">
+                                    <svg width="20" height="20" preserveAspectRatio="none" viewBox="0 0 24 24">
+                                        <path fill="#0055D9" d="M7 4c-1.1 0-2 .9-2 2v14l7-3 7 3V6c0-1.1-.9-2-2-2H7z"></path>
+                                    </svg>
+                                </i>
+                            </span>
+                            unsave
+                        </button>
+                        <p class="error d-inline-block text-danger my-0 mx-2"></p>
+                </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock inner_content %}
+
+{% block script %}
+<script>
+    
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // document.body.addEventListener('htmx:configRequest', function(evt) {
+    //     evt.detail.headers['X-CSRFToken'] = getCookie("csrftoken"); // add a new parameter into the mix
+    // });
+
+    const getErrorP = () => {
+        const p = document.createElement('p');
+        p.style.color = 'red';
+        p.textContent = 'An error happened!, try again later';
+        return p;
+    }
+    const unsave = (jobID) => {
+        const div = document.querySelector(`#job-${jobID}`)
+        if (div) {
+            fetch('', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: JSON.stringify({id: jobID}),
+                data: {id: jobID},
+            }).then((response) => response.json())
+            .then((result) => {
+                const success = result['success']
+                console.log('success =', success)
+                if (success) {
+                    div.remove()
+                    const jobsCountSpan = document.querySelector('span#jobs-count')
+                    if (jobsCountSpan) {
+                        const count = parseInt(jobsCountSpan.textContent)
+                        jobsCountSpan.textContent = `${count-1}`
+                    }
+                } else {
+                    const actionsDiv = div.querySelector('.actions')
+                    actionsDiv.querySelector('p.error').textContent = 'An error happened!, try again later'
+                }
+
+            }).catch((err) => {
+                console.log('err =', err)
+                const errorP = getErrorP()
+                const actionsDiv = div.querySelector('.actions')
+                actionsDiv.querySelector('p.error').textContent = 'An error happened!, try again later'
+            })
+        }
+    }
+</script>
+{% endblock script%}

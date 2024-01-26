@@ -25,6 +25,10 @@ class UserBase(AbstractUser):
 
     objects = CustomUserManager()
 
+    @property
+    def is_user(self):
+        return self.type == UserBase.UserTypes.USER
+
     def save(self, *args, **kwargs):
         if not self.pk:
             self.type = self.base_type
@@ -36,8 +40,8 @@ class UserBase(AbstractUser):
 
 # USER
 class UserInfo(models.Model):
-    user = models.OneToOneField(UserBase, on_delete=models.CASCADE)
-    middle_name = models.CharField(_("first name"), max_length=150, blank=True, null=True)
+    user = models.OneToOneField('User', on_delete=models.CASCADE)
+    middle_name = models.CharField(_("middle name"), max_length=150, blank=True, null=True)
     birthday = models.DateField(null=True)
     city = models.ForeignKey(City, on_delete=models.PROTECT)
 
@@ -58,7 +62,7 @@ class UserInfo(models.Model):
         return f'{self.city}, {self.city.state}, {self.city.state.country}'
 
     def __str__(self):
-        return f'{self.get_full_name()}'
+        return f'{self.user.get_full_name()}'
 
 
 class UserManager(models.Manager):

@@ -1,9 +1,12 @@
+import json
 from django.db.models import Count, F, Min, Max
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.views.generic import ListView, DetailView, RedirectView
+from django.http import HttpResponse, JsonResponse
 from .models import Job
 from locations.models import *
-from accounts.models import Company, CompanyInfo, Industry
-from django.views.generic import ListView, DetailView
+from accounts.models import Company, CompanyInfo, Industry, User
 
 
 def index(request):
@@ -202,3 +205,52 @@ class CompanyDetail(DetailView):
         # context['featured_jobs'] = Job.objects.filter(industry=job.industry)[:16]
         # context['similar_jobs'] = Job.objects.filter(industry=job.industry)[:16]
         return context
+
+
+@login_required
+def saved(request):
+    user = request.user
+    if user.is_user:
+        u = get_object_or_404(User, pk=user.id)
+        if request.method == 'GET':
+            context = {'jobs': u.saved_jobs.all()}
+            return render(request, template_name='jobs/user_saved_jobs.html', context=context)
+        elif request.method == 'POST':
+            try:
+                print('request body =', request.body)
+                id = json.loads(request.body).get('id')
+                job = get_object_or_404(Job, pk=id)
+                print('job =', job)
+                job_exists = u.saved_jobs.filter(pk=job.pk).exists()
+                print('job_exists =', job_exists)
+                if job_exists:
+                    print('exists')
+                    u.saved_jobs.remove(job)
+                else:
+                    print('not exists')
+                    u.saved_jobs.add(job)
+                return JsonResponse({'success': True})
+            except:
+                return JsonResponse({'success': False})
+        else:
+            return HttpResponse('Method Not Allowed')
+
+    # request user is company
+    return HttpResponse('Page Not Found', status=404)
+
+
+@login_required
+def applications(request):
+    user = request.user
+    if user.is_user:
+        u = get_object_or_404(User, pk=user.id)
+        if request.method == 'GET':
+            context = {'applications': u.applications.all()}
+            return render(request, template_name='jobs/user_applications.html', context=context)
+        elif request.method == 'POST':
+            # TODO: save user application
+            return HttpResponse('Application was sent successfuly')
+        else:
+            return HttpResponse('Method Not Allowed')
+    # request user is company
+    return HttpResponse('Page Not Found', status=404)

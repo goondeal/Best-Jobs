@@ -81,6 +81,7 @@ class Job(models.Model):
     what_we_offer = models.TextField(max_length=1000, blank=True, null=True)
     skills = models.ManyToManyField(Skill, related_name='jobs')
     questions = models.ManyToManyField(JobQuestion, related_name='selected_questions')
+    savers = models.ManyToManyField(User, related_name='saved_jobs', through='UserSavedJobs')
 
     keep_company_confidential = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -152,3 +153,17 @@ class JobApplicationAnswer(models.Model):
     
     def __str__(self) -> str:
         return f'APP-{self.application.id} {self.question} {self.answer}'
+
+class UserSavedJobs(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    job = models.ForeignKey(Job, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-created_at',)
+        constraints = [
+            models.UniqueConstraint(fields=['job', 'user'], name='no_repeated_saved_jobs_for_users')
+        ]
+
+    def __str__(self) -> str:
+        return f'{self.job} - {self.user}'    

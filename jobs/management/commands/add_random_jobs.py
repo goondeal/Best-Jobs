@@ -37,6 +37,7 @@ class Command(BaseCommand):
                     type=random.choice(Job._JOB_TYPES)[0],
                     # category=,
                     city=random.choice(_cities),
+                    industry=random.choice(industries),
                     career_level=random.choice(Job._CAREER_LEVELS)[0],
                     min_years_of_experience=role['years'][0],
                     max_years_of_experience=role['years'][-1],
@@ -62,9 +63,6 @@ class Command(BaseCommand):
                     job.skills.add(s)
                 for q in company.questions.all():
                     job.questions.add(q)
-                job_industries = random.sample(industries, k=2)
-                for industry in job_industries:
-                    job.industry.add(industry)
                 job.save()
 
             logger.info(f'{jobs_count} jobs were added')

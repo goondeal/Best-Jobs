@@ -2,7 +2,7 @@
 {% load time_ago %}
 {% load static %}
 
-<div class="card bg-white p-3 {% if not full %} my-0 border-0 {% else %} my-3 {% endif %}">
+<div class="card bg-white p-3 border-0">
     <div class="row g-0">
       <div class="d-flex">
         <a href="{% url 'company_detail' slug=job.company.data.slug %}" target="_blank">

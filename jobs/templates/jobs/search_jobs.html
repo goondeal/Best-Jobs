@@ -217,7 +217,9 @@
                     </div>
                 </div>
                 {% for job in jobs %}
-                    {% include './components/job_card.html' with job=job full=True %}
+                    <div class="my-3">
+                        {% include './components/job_card.html' with job=job full=True %}
+                    </div>
                 {% endfor %}
                 
                 {% if page_obj.has_other_pages %}

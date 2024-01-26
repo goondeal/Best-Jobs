@@ -82,6 +82,7 @@ class Command(BaseCommand):
                     title=role['title'],
                     type=random.choice(Job._JOB_TYPES)[0],
                     # category=,
+                    industry=random.choice(industries),
                     city=random.choice(_cities),
                     career_level=random.choice(Job._CAREER_LEVELS)[0],
                     min_years_of_experience=role['years'][0],
