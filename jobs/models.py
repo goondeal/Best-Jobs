@@ -1,5 +1,6 @@
 from datetime import datetime
 from django.db import models
+from django.core.validators import FileExtensionValidator
 from django.utils.text import slugify
 from django.core.validators import MinValueValidator
 from accounts.models import Company, User, Industry
@@ -16,7 +17,7 @@ class Skill(models.Model):
 class JobQuestion(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='questions')
     question = models.CharField(max_length=255)
-    optional = models.BooleanField(default=False)
+    required = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -80,10 +81,11 @@ class Job(models.Model):
     requirements = models.TextField(max_length=1000)
     what_we_offer = models.TextField(max_length=1000, blank=True, null=True)
     skills = models.ManyToManyField(Skill, related_name='jobs')
-    questions = models.ManyToManyField(JobQuestion, related_name='selected_questions')
+    questions = models.ManyToManyField(JobQuestion, related_name='jobs')
     savers = models.ManyToManyField(User, related_name='saved_jobs', through='UserSavedJobs')
 
     keep_company_confidential = models.BooleanField(default=False)
+    is_available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     last_update_at = models.DateTimeField(auto_now=True)
 
@@ -131,8 +133,8 @@ class JobApplication(models.Model):
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='applications')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='applications')
     cover_letter = models.TextField(max_length=2000, blank=True, null=True)
-    questions = models.ManyToManyField(JobQuestion, through='JobApplicationAnswer')
-
+    # questions = models.ManyToManyField(JobQuestion, through='JobApplicationAnswer')
+    cv = models.FileField(upload_to='applications_cvs', validators=[FileExtensionValidator(allowed_extensions=['txt', 'pdf', 'doc', 'docx'])])
     created_at = models.DateTimeField(auto_now_add=True)
     last_update_at = models.DateTimeField(auto_now=True)
 
@@ -147,8 +149,8 @@ class JobApplication(models.Model):
 
 
 class JobApplicationAnswer(models.Model):
-    application = models.ForeignKey(JobApplication, on_delete=models.CASCADE)
-    question = models.ForeignKey(JobQuestion, on_delete=models.CASCADE)
+    application = models.ForeignKey(JobApplication, on_delete=models.CASCADE, related_name='answers')
+    question = models.ForeignKey(JobQuestion, on_delete=models.CASCADE, related_name='application_answers')
     answer = models.CharField(max_length=155)
     
     def __str__(self) -> str:
