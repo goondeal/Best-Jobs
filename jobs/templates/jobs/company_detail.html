@@ -51,7 +51,7 @@
                 <div id="jobs" class="card my-3 p-4">
                     <h2 class="fs-5 mb-3">Open Vacancies at {{ companyinfo.name }}</h2>
                     <div>
-                        {% for job in companyinfo.company.jobs.all %}
+                        {% for job in companyinfo.company.open_jobs.all %}
                             <div class="card my-3 p-3">
                                 <a href="{% url 'job_detail' slug=job.slug %}" class="text-decoration-none">
                                     <h3 class="fs-6 fw-bold m-0 d-inline-block">{{ job.title }}</h3>  <small class="text-muted" style="font-size: 14px;"> - {{ job.location }}</small>

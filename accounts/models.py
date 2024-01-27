@@ -150,6 +150,11 @@ class Company(UserBase):
     @property
     def data(self):
         return self.companyinfo
+    
+    @property
+    def open_jobs(self):
+        return self.jobs.filter(is_available=True)
+    
 
     class Meta:
         proxy = True

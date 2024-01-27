@@ -19,7 +19,7 @@ def explore(request):
 
 def country_jobs(request, country_code):
     country = get_object_or_404(Country, pk=country_code)
-    jobs = Job.objects.filter(city__state__country__pk=country_code)
+    jobs = Job.objects.filter(city__state__country__pk=country_code, is_available=True)
     country_top_companies = CompanyInfo.objects.filter(city__state__country__pk=country_code).order_by('-size')[:20]
     context = {
         'country': country,
@@ -92,7 +92,7 @@ class JobsView(ListView):
         return result
 
     def get_queryset(self):
-        queryset = Job.objects.all()
+        queryset = Job.objects.filter(is_available=True)
         print('all jobs count', queryset.count())
         if self.request.method == 'GET':
             params = self._get_request_params()
@@ -104,7 +104,7 @@ class JobsView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.method == 'GET':
-            queryset = Job.objects.all()
+            queryset = Job.objects.filter(is_available=True)
             # print('qs id =', id(queryset))
             params = self._get_request_params()
             
@@ -193,8 +193,8 @@ class JobDetail(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         job = self.get_object()
-        context['featured_jobs'] = Job.objects.filter(industry=job.industry)[:16]
-        context['similar_jobs'] = Job.objects.filter(industry=job.industry)[:16]
+        context['featured_jobs'] = Job.objects.filter(is_available=True, industry=job.industry)[:16]
+        context['similar_jobs'] = Job.objects.filter(is_available=True, industry=job.industry)[:16]
         return context
 
 class CompanyDetail(DetailView):
