@@ -1,0 +1,165 @@
+{% extends './layout.html' %}
+
+{% block title %} {{job.title}} | Application Form | BestJobs {%endblock %}
+
+{% load static %}
+{% load humanize %}
+{% load time_ago %}
+{% load crispy_forms_tags %} 
+
+
+{% block inner_content %}
+<div class="container mt-4 min-vh-100">
+    <div class="row g-3">
+        <div class="col-sm-12 col-lg-3">
+            <div class="bg-light p-3 rounded-2 border border-muted">
+                <span class="badge bg-secondary" >Tip</span>
+                <p class="mt-2  mb-0">
+                    Your answers reflect your vital skills and experience. Providing excellent answers sets you apart from the competition.
+                </p>
+            </div>
+        </div>
+        <div class="col-sm-12 col-lg-7">
+            <form action="{% url 'job_application' slug=job.slug %}" method="post" enctype="multipart/form-data">
+                <div class="p-3 d-flex align-items-center justify-content-between" style="background-color: #001E4C;">
+                    <h2 class="fs-4 text-white">Application Form</h2>
+                    <button class="p-2 btn btn-secondary">View Job Details</button>
+                </div>
+                <div class="p-4 bg-white">
+                    <div class="mb-5 d-flex align-items-center justify-content-between">
+                        <div class="w-75">
+                            <h3 class="fs-3">{{job.title}}</h3>
+                            <p class="text-muted">
+                                The hiring team at {{job.company.data.name}} requires you to answer the below questions.
+                            </p>
+                        </div>
+                        <img src="{{job.company.data.logo.url}}" alt="{{job.company.data.name}}">
+                    </div>
+                    
+                    {% csrf_token %}
+
+                    {% comment %}
+                        {% for form in formset %}
+                        <div class="my-5">
+                        {{ form|crispy }}
+                        </div>
+                        {% endfor %}
+                    {% endcomment %}
+                    
+                    <fieldset >
+                    {% for q in job.questions.all %}
+                        <div class="my-5">
+                            <label class="fs-5" for="{{q.id}}">
+                                {{q.question}}
+                                {% if q.required %}
+                                    <span class="text-danger">*</span>
+                                {% else %}
+                                    <span class="fs-6 text-muted">(optional)</span>
+                                {% endif %}
+                            </label>
+                            {% if q.answers.exists %}
+                                <select class="w-100 py-2 d-block" name="{{q.id}}" id="{{q.id}}">
+                                    {% if not q.required %}
+                                        <option value="" disabled selected hidden></option>
+                                    {% endif %}
+                                    {% for a in q.answers.all %}
+                                        <option value="{{a.value}}">{{a.value}}</option>
+                                    {% endfor %}
+                                </select>
+                            {% else %}
+                                <textarea class="w-100 p-2" name="{{q.id}}" {% if q.required %} required {% endif %}></textarea>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    </fieldset>
+                    <div class="my-5">
+                        {{ form|crispy }}
+                    </div>
+                </div>
+                <div class="my-4 d-flex align-items-center justify-content-between">
+                    <a class="my-2 p-2 text-muted btn rounded-1" style="background-color: #cecece;"
+                    href="{% url 'job_detail' slug=job.slug %}">
+                        <i size="16">
+                            <svg width="16" height="16" preserveAspectRatio="none" viewBox="0 0 24 24">
+                                <path fill="#4D6182" d="M14.787 19l1.713-1.645L10.937 12 16.5 6.645 14.787 5 7.5 12z"></path>
+                            </svg>
+                        </i>
+                        Cancel
+                    </a>
+                    <div class="d-flex">
+                        <button class="my-2 p-2 text-muted btn rounded-1" style="background-color: #cecece;">Save and Apply later</button>
+                        <div style="width: 8px;"></div>
+                        <input class="my-2 p-2 btn btn-primary text-white rounded-1" type="submit" value="Submit application">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock inner_content %}
+
+{% block script %}
+<script>
+    
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // document.body.addEventListener('htmx:configRequest', function(evt) {
+    //     evt.detail.headers['X-CSRFToken'] = getCookie("csrftoken"); // add a new parameter into the mix
+    // });
+
+    const getErrorP = () => {
+        const p = document.createElement('p');
+        p.style.color = 'red';
+        p.textContent = 'An error happened!, try again later';
+        return p;
+    }
+    const unsave = (jobID) => {
+        const div = document.querySelector(`#job-${jobID}`)
+        if (div) {
+            fetch('', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: JSON.stringify({id: jobID}),
+                data: {id: jobID},
+            }).then((response) => response.json())
+            .then((result) => {
+                const success = result['success']
+                console.log('success =', success)
+                if (success) {
+                    div.remove()
+                    const jobsCountSpan = document.querySelector('span#jobs-count')
+                    if (jobsCountSpan) {
+                        const count = parseInt(jobsCountSpan.textContent)
+                        jobsCountSpan.textContent = `${count-1}`
+                    }
+                } else {
+                    const actionsDiv = div.querySelector('.actions')
+                    actionsDiv.querySelector('p.error').textContent = 'An error happened!, try again later'
+                }
+
+            }).catch((err) => {
+                console.log('err =', err)
+                const errorP = getErrorP()
+                const actionsDiv = div.querySelector('.actions')
+                actionsDiv.querySelector('p.error').textContent = 'An error happened!, try again later'
+            })
+        }
+    }
+</script>
+{% endblock script%}

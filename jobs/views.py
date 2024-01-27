@@ -4,9 +4,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView, RedirectView
 from django.http import HttpResponse, JsonResponse
-from .models import Job
+from .models import Job, JobApplicationAnswer, JobApplication
 from locations.models import *
 from accounts.models import Company, CompanyInfo, Industry, User
+from .forms import JobApplicationForm, JobApplicationAnswerForm
+from django.forms import formset_factory, modelform_factory, Select
 
 
 def index(request):
@@ -240,17 +242,73 @@ def saved(request):
 
 
 @login_required
-def applications(request):
+def applications(request, slug):
     user = request.user
     if user.is_user:
         u = get_object_or_404(User, pk=user.id)
         if request.method == 'GET':
             context = {'applications': u.applications.all()}
             return render(request, template_name='jobs/user_applications.html', context=context)
-        elif request.method == 'POST':
-            # TODO: save user application
-            return HttpResponse('Application was sent successfuly')
         else:
             return HttpResponse('Method Not Allowed')
+    # request user is company
+    return HttpResponse('Page Not Found', status=404)
+
+
+@login_required
+def job_application(request, slug):
+    user = request.user
+    if user.is_user:
+        u = get_object_or_404(User, pk=user.id)
+        job = get_object_or_404(Job, slug=slug)
+        if request.method == 'GET':
+            # check if Job is no longer open
+            if not job.is_available:
+                return HttpResponse('This job no longer accepts applications')
+            # TODO: check if user had applied befor, return his application to edit
+            formset = formset_factory(JobApplicationAnswerForm, extra=job.questions.count())
+            # formset = formset_factory(JobApplicationAnswer, extra=job.selected_questions.count())
+            # questions_form = []
+            # for q in job.selected_questions.all():
+            #     kwargs = {'fields': ['answer'], 'labels': {'answer': q.question}}
+            #     if q.answers.exists():
+            #         kwargs['widgets'] = {'answer': Select(choices={a.id: a.value for a in q.answers.all()}) }
+            #     questions_form.append(
+            #         modelform_factory(JobApplicationAnswer, **kwargs)
+            #     )
+            context = {'job': job, 'form': JobApplicationForm(), 'formset': formset}            
+        elif request.method == 'POST':
+            print('application request.POST =', request.POST)
+            # TODO: save user application
+            application_form = JobApplicationForm(request.POST, request.FILES)
+            print('valid form =', application_form.is_valid())
+
+            if application_form.is_valid():
+                print('cleaned data =', application_form.cleaned_data)
+                excluded_keys = set(application_form.cleaned_data.keys()).union({'csrfmiddlewaretoken'})
+                keys = set(request.POST.keys()).difference(excluded_keys)
+                print('keys =', keys)
+                answers_forms = [
+                    JobApplicationAnswerForm({'question': key, 'answer': request.POST.get(key)}) for key in keys
+                ]
+                if all([form.is_valid() for form in answers_forms]):
+                    application = JobApplication.objects.create(
+                        user=u,
+                        job=job,
+                        **application_form.cleaned_data
+                    )
+                    for form in answers_forms:
+                        print('cleaned data =', form.cleaned_data)
+                        JobApplicationAnswer.objects.create(
+                            application=application,
+                            **form.cleaned_data
+                        )
+                    return HttpResponse(f'Application was sent successfuly')
+            else:
+                print('errors =', application_form.errors)
+            context = {'job': job, 'form': application_form, 'formset': None}
+        else:
+            return HttpResponse('Method Not Allowed')  
+        return render(request, template_name='jobs/job_application.html', context=context)
     # request user is company
     return HttpResponse('Page Not Found', status=404)
