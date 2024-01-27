@@ -61,7 +61,9 @@ class Command(BaseCommand):
                 c_skills=random.sample(skills, k=random.randint(6, 15))
                 for s in c_skills:
                     job.skills.add(s)
-                for q in company.questions.all():
+                q_list = list(company.questions.all())
+                qs = random.sample(q_list, k=random.randint(1, len(q_list)-1))
+                for q in qs:
                     job.questions.add(q)
                 job.save()
 
